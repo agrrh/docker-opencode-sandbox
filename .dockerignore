@@ -1,0 +1,12 @@
+.git
+.gitignore
+.dockerignore
+
+README.md
+LICENSE
+
+opencode-sandbox.sh
+
+**/.DS_Store
+**/*~
+**/*.swp
