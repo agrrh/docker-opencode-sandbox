@@ -30,10 +30,9 @@
 | **Runtimes** | [Node.js 24](https://nodejs.org/), [Python 3](https://www.python.org/), [Go](https://go.dev/) |
 | **Build Tools** | `make`, `g++`, `gcc`, `unzip`, `rsync` |
 | **Version Control & Utils** | `git`, `curl`, `wget`, `jq` |
-| **Search & Text** | [`ripgrep`](https://github.com/BurntSushi/ripgrep) (`rg`) |
 | **System Tools** | `dnsutils`, `lsof`, `psmisc`, `procps`, `socat`, `bc` |
 | **Shell & Docs** | `bash`, `man-db`, `less`, `ca-certificates` |
-| **AI Agent** | [`opencode-ai`](https://opencode.ai) (v1.19.4, installed globally) |
+| **AI Agent** | [`opencode-ai`](https://opencode.ai) |
 
 ## ✅ Prerequisites
 
