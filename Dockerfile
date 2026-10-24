@@ -64,10 +64,11 @@ RUN apt-get clean \
 USER 1000
 
 ENV PATH="${PATH}:/home/opencode/n/bin"
+ENV OPENCODE_VERSION=1.19.4
 
 WORKDIR /home/opencode
 
-RUN npm install opencode-ai \
+RUN npm install opencode-ai@${OPENCODE_VERSION} \
   && npm cache clean --force
 
 ENV PATH="${PATH}:/home/opencode/node_modules/.bin"
