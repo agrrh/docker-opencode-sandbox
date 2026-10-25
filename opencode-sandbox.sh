@@ -39,6 +39,17 @@ for name in "${ENV_VAR_NAMES[@]}"; do
   fi
 done
 
+# Optional one-shot task.
+#
+# With a task, opencode runs it and exits (non-interactive,
+# `opencode run "..."`). Without one, opencode starts interactive
+# --auto mode (the default CMD in the Dockerfile).
+RUN_ARGS=()
+if [[ "$#" -gt 0 ]]; then
+  RUN_ARGS=("opencode" "run" "$*")
+  echo "Running opencode in task mode: $*" >&2
+fi
+
 # Starting
 
 docker run --rm -ti --name "opencode-$(basename "${CWD}")-$(date +%Y%m%d-%H%M%S)" \
@@ -49,4 +60,5 @@ docker run --rm -ti --name "opencode-$(basename "${CWD}")-$(date +%Y%m%d-%H%M%S)
   -v "${HOME}/.local/state/opencode":/home/opencode/.local/state/opencode \
   -v "${EDITOR_HOST_PATH}:/usr/bin/$(basename ${EDITOR}):ro" \
   -v "$(pwd)":/work \
-  agrrh/opencode-sandbox:latest
+  local/opencode-sandbox \
+  ${RUN_ARGS[@]+"${RUN_ARGS[@]}"}

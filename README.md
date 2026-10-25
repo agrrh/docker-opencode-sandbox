@@ -78,6 +78,16 @@ The included `opencode-sandbox.sh` script handles all the volume mounts and conf
 
 > **Note:** If you see `ERROR! Please run native opencode at least once.`, run `opencode` on your host machine first to initialize the necessary directories.
 
+### Running a specific task
+
+Pass a task to run opencode in one-shot mode (`opencode run "..."`) instead of starting the interactive session. opencode executes the task and exits — handy for automation and CI.
+
+```bash
+./opencode-sandbox.sh "Refactor the auth module and add tests"
+```
+
+Without an argument, the launcher starts the interactive `opencode --auto` session as before.
+
 ### Passing environment variables
 
 The launcher forwards host environment variables into the container **by name**, using `docker -e NAME` (without `=value`). Docker reads the value from your environment at runtime, so the secret itself never appears on the command line, in `ps`, or in shell history.
