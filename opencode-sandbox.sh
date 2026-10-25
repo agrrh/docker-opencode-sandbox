@@ -9,6 +9,33 @@ DEFAULT_PROVIDER="${OPENCODE_SANDBOX_DEFAULT_PROVIDER:-}"
 DEFAULT_MODEL="${OPENCODE_SANDBOX_DEFAULT_MODEL:-}"
 
 #
+# Required commands
+#
+
+REQUIRED_COMMANDS=(
+  opencode
+  fzf
+  docker
+  which
+  basename
+  cut
+  uniq
+  date
+)
+
+MISSING_COMMANDS=()
+for cmd in "${REQUIRED_COMMANDS[@]}"; do
+  if ! command -v "${cmd}" >/dev/null 2>&1; then
+    MISSING_COMMANDS+=("${cmd}")
+  fi
+done
+
+if [ "${#MISSING_COMMANDS[@]}" -gt 0 ]; then
+  echo "ERROR! Missing required command(s): ${MISSING_COMMANDS[*]}"
+  exit 1
+fi
+
+#
 # Sanity checks
 #
 
