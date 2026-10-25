@@ -52,11 +52,45 @@ Before you begin, ensure you have the following:
 docker build -t local/opencode-sandbox .
 ```
 
-### 2. Run from your project directory
+### 2. Make the launcher executable
+
+The script needs execute permission before you can run it:
+
+```bash
+chmod +x opencode-sandbox.sh
+```
+
+### 3. (Optional) Add it to your PATH
+
+To run the launcher from any directory, symlink it into a folder that's already on your `PATH` (e.g. `~/.local/bin`, which is on the PATH in most setups):
+
+```bash
+ln -s /path/to/opencode-sandbox/opencode-sandbox.sh ~/.local/bin/opencode-sandbox
+```
+
+### 4. Set the environment variables
+
+The launcher is controlled entirely through environment variables. At minimum you should forward an API key so opencode can reach a model:
+
+```bash
+export OPENCODE_SANDBOX_ENV_VARS="OPENAI_API_KEY"
+```
+
+| Variable | Default | Needed for | Description |
+| --- | --- | --- | --- |
+| `OPENCODE_SANDBOX_ENV_VARS` | `OPENAI_API_KEY` | **Required** | Space-separated list of host env var names to forward into the sandbox (by name only). Forward your API key here so opencode can authenticate. |
+| `OPENCODE_SANDBOX_EDITOR` | `vim` | Recommended | Host editor binary to mount read-only into the container. |
+| `OPENCODE_SANDBOX_DEFAULT_PROVIDER` | *(prompt)* | Optional | Default model provider; set it to skip the fzf picker on launch. |
+| `OPENCODE_SANDBOX_DEFAULT_MODEL` | *(prompt)* | Optional | Default model; set it to skip the fzf picker on launch. |
+
+See [Configuration](#configuration) for the full list and more examples.
+
+### 5. Run from your project directory
 
 ```bash
 cd /path/to/your-project
-/path/to/opencode-sandbox/opencode-sandbox.sh
+opencode-sandbox          # via PATH, or:
+./opencode-sandbox.sh     # directly
 ```
 
 The launcher will automatically mount your current directory to `/work`, load your existing opencode configuration, and start opencode in auto mode.

@@ -85,7 +85,7 @@ fi
 # The list of variable names is configured via SANDBOX_ENV_VARS
 # (space-separated). EDITOR is always passed. OPENAI_API_KEY is included
 # by default for backwards compatibility.
-read -ra ENV_VAR_NAMES <<< "${ENV_VARS:-OPENAI_API_KEY}"
+read -ra ENV_VAR_NAMES <<< "${ENV_VARS}"
 
 ENV_ARGS=()
 for name in "${ENV_VAR_NAMES[@]}"; do
