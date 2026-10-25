@@ -30,8 +30,8 @@
 | --- | --- |
 | **Runtimes** | [Node.js 24](https://nodejs.org/), [Python 3](https://www.python.org/), [Go](https://go.dev/) |
 | **Build Tools** | `make`, `g++`, `gcc`, `unzip`, `rsync` |
-| **Version Control & Utils** | `git`, `curl`, `wget`, `jq` |
-| **System Tools** | `dnsutils`, `lsof`, `psmisc`, `procps`, `socat`, `bc` |
+| **Version Control & Utils** | `git`, `curl`, `jq` |
+| **System Tools** | `dnsutils`, `lsof`, `psmisc`, `procps`, `socat`, `bc`, `ripgrep` |
 | **Shell & Docs** | `bash`, `man-db`, `less`, `ca-certificates` |
 | **AI Agent** | [`opencode-ai`](https://opencode.ai) |
 
@@ -40,7 +40,8 @@
 Before you begin, ensure you have the following:
 
 - [Docker](https://docs.docker.com/get-docker/) installed and running
-- [opencode](https://opencode.ai) run at least once natively to generate config/cache/state directories in `~/.config/opencode/`, `~/.cache/opencode/`, and `~/.local/state/opencode/`
+- [opencode](https://opencode.ai) installed on your host and run at least once natively to generate config/cache/state directories in `~/.config/opencode/`, `~/.cache/opencode/`, and `~/.local/state/opencode/`
+- [fzf](https://github.com/junegunn/fzf) installed — the launcher uses it to pick a default model
 - A project directory you want the agent to work on
 
 ## 🚀 Quick Start
@@ -69,8 +70,11 @@ The included `opencode-sandbox.sh` script handles all the volume mounts and conf
 1. Check for required opencode config directories on your host
 2. Create a uniquely named container for your session
 3. Mount your project, config (read-only), cache, and state
-4. Forward the environment variables listed in `SANDBOX_ENV_VARS` (by name only)
-5. Launch opencode in auto mode
+4. Mount your host editor (`$EDITOR`) read-only into the container
+5. Forward the environment variables listed in `OPENCODE_SANDBOX_ENV_VARS` (by name only)
+6. Launch opencode in auto mode
+
+> **Model selection:** on launch, if you haven't set a default provider/model, the script opens an interactive [fzf](https://github.com/junegunn/fzf) picker so you can choose the default provider and model for the session. Set `OPENCODE_SANDBOX_DEFAULT_PROVIDER` and `OPENCODE_SANDBOX_DEFAULT_MODEL` to skip the prompts.
 
 ```bash
 ./opencode-sandbox.sh
@@ -86,16 +90,18 @@ Pass a task to run opencode in one-shot mode (`opencode run "..."`) instead of s
 ./opencode-sandbox.sh "Refactor the auth module and add tests"
 ```
 
+The task runs with `opencode run --auto --thinking` using the selected default model. Set `OPENCODE_SANDBOX_DEFAULT_PROVIDER` and `OPENCODE_SANDBOX_DEFAULT_MODEL` to pick the model non-interactively.
+
 Without an argument, the launcher starts the interactive `opencode --auto` session as before.
 
 ### Passing environment variables
 
 The launcher forwards host environment variables into the container **by name**, using `docker -e NAME` (without `=value`). Docker reads the value from your environment at runtime, so the secret itself never appears on the command line, in `ps`, or in shell history.
 
-By default it forwards `OPENAI_API_KEY` for backwards compatibility. To forward any number of variables, list their names — space-separated — in `SANDBOX_ENV_VARS`:
+By default it forwards `OPENAI_API_KEY` for backwards compatibility. To forward any number of variables, list their names — space-separated — in `OPENCODE_SANDBOX_ENV_VARS`:
 
 ```bash
-SANDBOX_ENV_VARS="OPENAI_API_KEY ANTHROPIC_API_KEY" \
+OPENCODE_SANDBOX_ENV_VARS="OPENAI_API_KEY ANTHROPIC_API_KEY" \
   ./opencode-sandbox.sh
 ```
 
@@ -103,9 +109,20 @@ SANDBOX_ENV_VARS="OPENAI_API_KEY ANTHROPIC_API_KEY" \
 - To use a set of variables often, export the list once:
 
   ```bash
-  export SANDBOX_ENV_VARS="OPENAI_API_KEY ANTHROPIC_API_KEY"
+  export OPENCODE_SANDBOX_ENV_VARS="OPENAI_API_KEY ANTHROPIC_API_KEY"
   ./opencode-sandbox.sh
   ```
+
+### Configuration
+
+All launcher behaviour is controlled through environment variables:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `OPENCODE_SANDBOX_ENV_VARS` | `OPENAI_API_KEY` | Space-separated list of host env var names to forward into the sandbox (by name only). |
+| `OPENCODE_SANDBOX_EDITOR` | `vim` | Host editor binary to mount read-only at `/usr/bin/<name>` inside the container. |
+| `OPENCODE_SANDBOX_DEFAULT_PROVIDER` | *(prompt)* | Default model provider. If empty, an fzf picker lets you choose one. |
+| `OPENCODE_SANDBOX_DEFAULT_MODEL` | *(prompt)* | Default model. If empty, an fzf picker lets you choose one. |
 
 ### Manual invocation
 
