@@ -22,6 +22,7 @@
 - 💾 **Persistent Configuration** — Your opencode auth, settings, and preferences persist across runs via mounted volumes
 - ⚡ **Quick & Easy** — Simple launcher script gets you up and running in seconds
 - 🛡️ **Read-Only Config** — Credentials and config are mounted read-only for extra safety
+- 🔐 **Env Pass-through** — Forward any host environment variables (e.g. API keys) into the sandbox by name; values never touch the command line
 
 ## 📦 What's Included
 
@@ -68,13 +69,33 @@ The included `opencode-sandbox.sh` script handles all the volume mounts and conf
 1. Check for required opencode config directories on your host
 2. Create a uniquely named container for your session
 3. Mount your project, config (read-only), cache, and state
-4. Launch opencode in auto mode
+4. Forward the environment variables listed in `SANDBOX_ENV_VARS` (by name only)
+5. Launch opencode in auto mode
 
 ```bash
 ./opencode-sandbox.sh
 ```
 
 > **Note:** If you see `ERROR! Please run native opencode at least once.`, run `opencode` on your host machine first to initialize the necessary directories.
+
+### Passing environment variables
+
+The launcher forwards host environment variables into the container **by name**, using `docker -e NAME` (without `=value`). Docker reads the value from your environment at runtime, so the secret itself never appears on the command line, in `ps`, or in shell history.
+
+By default it forwards `OPENAI_API_KEY` for backwards compatibility. To forward any number of variables, list their names — space-separated — in `SANDBOX_ENV_VARS`:
+
+```bash
+SANDBOX_ENV_VARS="OPENAI_API_KEY ANTHROPIC_API_KEY" \
+  ./opencode-sandbox.sh
+```
+
+- Only variables that are actually set are forwarded; unset names produce a warning and are skipped.
+- To use a set of variables often, export the list once:
+
+  ```bash
+  export SANDBOX_ENV_VARS="OPENAI_API_KEY ANTHROPIC_API_KEY"
+  ./opencode-sandbox.sh
+  ```
 
 ### Manual invocation
 
@@ -87,6 +108,13 @@ docker run --rm -ti \
   -v "$HOME/.cache/opencode":/home/opencode/.cache/opencode \
   -v "$HOME/.local/state/opencode":/home/opencode/.local/state/opencode \
   local/opencode-sandbox
+```
+
+To forward environment variables manually, add `-e NAME` for each one. Export the variable first so Docker can read its value — only the name is placed on the command line:
+
+```bash
+export OPENAI_API_KEY=...
+docker run --rm -ti -e OPENAI_API_KEY -v "$PWD":/work local/opencode-sandbox
 ```
 
 By default, the container runs `opencode --auto`. You can override the command entirely:
