@@ -114,6 +114,8 @@ fi
 
 CONTAINER_NAME="opencode-$(basename "${CWD}")-$(date +%Y%m%d-%H%M%S)"
 
+docker volume create --label org.opencode.sandbox=true "${CONTAINER_NAME}-state"
+
 docker run --rm -ti --name ${CONTAINER_NAME} \
   -e EDITOR \
   ${ENV_ARGS[@]+${ENV_ARGS[@]} } \
@@ -124,3 +126,5 @@ docker run --rm -ti --name ${CONTAINER_NAME} \
   -v "$(pwd)":/work \
   local/opencode-sandbox \
   ${RUN_ARGS[@]+"${RUN_ARGS[@]}"}
+
+docker volume rm "${CONTAINER_NAME}-state"
