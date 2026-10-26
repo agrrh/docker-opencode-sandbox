@@ -102,7 +102,7 @@ done
 # With a task, opencode runs it and exits (non-interactive,
 # `opencode run "..."`). Without one, opencode starts interactive
 # --auto mode (the default CMD in the Dockerfile).
-RUN_ARGS=()
+RUN_ARGS=("opencode" "--auto")
 if [[ "$#" -gt 0 ]]; then
   RUN_ARGS=("opencode" "run" "--auto" "--thinking" "--model" "${DEFAULT_PROVIDER}/${DEFAULT_MODEL}" "$*")
   echo "Running opencode in task mode: $*" >&2
@@ -112,12 +112,14 @@ fi
 # Starting
 #
 
-docker run --rm -ti --name "opencode-$(basename "${CWD}")-$(date +%Y%m%d-%H%M%S)" \
+CONTAINER_NAME="opencode-$(basename "${CWD}")-$(date +%Y%m%d-%H%M%S)"
+
+docker run --rm -ti --name ${CONTAINER_NAME} \
   -e EDITOR \
   ${ENV_ARGS[@]+${ENV_ARGS[@]} } \
   -v "${HOME}/.config/opencode":/home/opencode/.config/opencode \
   -v "${HOME}/.cache/opencode":/home/opencode/.cache/opencode \
-  -v "${HOME}/.local/state/opencode":/home/opencode/.local/state/opencode \
+  -v "${CONTAINER_NAME}-state:/home/opencode/.local/state/opencode" \
   -v "${EDITOR_HOST_PATH}:/usr/bin/${EDITOR_BASENAME}:ro" \
   -v "$(pwd)":/work \
   local/opencode-sandbox \
