@@ -117,8 +117,8 @@ CONTAINER_NAME="opencode-$(basename "${CWD}")-$(date +%Y%m%d-%H%M%S)"
 docker run --rm -ti --name ${CONTAINER_NAME} \
   -e EDITOR \
   ${ENV_ARGS[@]+${ENV_ARGS[@]} } \
-  -v "${HOME}/.config/opencode":/home/opencode/.config/opencode \
-  -v "${HOME}/.cache/opencode":/home/opencode/.cache/opencode \
+  -v "${HOME}/.config/opencode:/home/opencode/.config/opencode" \
+  -v "${HOME}/.cache/opencode:/home/opencode/.cache/opencode" \
   -v "${CONTAINER_NAME}-state:/home/opencode/.local/state/opencode" \
   -v "${EDITOR_HOST_PATH}:/usr/bin/${EDITOR_BASENAME}:ro" \
   -v "$(pwd)":/work \
