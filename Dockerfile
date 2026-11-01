@@ -50,9 +50,7 @@ RUN cd /tmp \
 RUN mkdir -p /work \
   && chown opencode:opencode /work \
   && mkdir -p /home/opencode \
-  && chown -R opencode:opencode /home/opencode \
-  && mkdir -p /opt/npm-extras \
-  && chown -R opencode:opencode /opt/npm-extras
+  && chown -R opencode:opencode /home/opencode
 
 # Cleanup
 
@@ -64,14 +62,17 @@ RUN apt-get clean \
 USER 1000
 
 ENV PATH="${PATH}:/home/opencode/n/bin"
-ENV OPENCODE_VERSION=2.1.4
+ENV OPENCODE_VERSION=2.2.5
 
 WORKDIR /home/opencode
 
-RUN npm install @opencode/cli@${OPENCODE_VERSION} \
+RUN npm install @opencode/cli-linux-x64@${OPENCODE_VERSION} \
   && npm cache clean --force
 
-ENV PATH="${PATH}:/home/opencode/node_modules/.bin"
+RUN mkdir -p /home/opencode/.local/share \
+  && mkdir -p /home/opencode/.local/state/opencode
+
+ENV PATH="${PATH}:/home/opencode/node_modules/@opencode/cli-linux-x64/bin"
 
 # Start
 
