@@ -125,9 +125,9 @@ docker run --rm -ti --name ${CONTAINER_NAME} \
   -v "${CONTAINER_NAME}-state:/home/opencode/.local/state/opencode" \
   -v "${EDITOR_HOST_PATH}:/usr/bin/${EDITOR_BASENAME}:ro" \
   -v "$(pwd)":/work \
-  local/opencode-sandbox \
-  /bin/bash -c "
-    cp -r /tmp/state-opencode/* /home/opencode/.local/state/opencode/;
-    ${RUN_ARGS[@]+"${RUN_ARGS[@]}"}"
+  local/opencode-sandbox
+  /bin/bash -c \
+    cp -r /tmp/state-opencode/* /home/opencode/.local/state/opencode/; \
+    ${RUN_ARGS[@]+"${RUN_ARGS[@]}"}
 
 docker volume rm "${CONTAINER_NAME}-state"
