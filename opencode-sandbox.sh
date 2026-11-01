@@ -114,21 +114,20 @@ fi
 
 CONTAINER_NAME="opencode-$(basename "${CWD}")-$(date +%Y%m%d-%H%M%S)"
 
-docker create --rm -ti --name ${CONTAINER_NAME} \
-  -u 1000 \
+docker volume create "${CONTAINER_NAME}-state"
+
+docker run --rm -ti --name ${CONTAINER_NAME} \
   -e EDITOR \
   ${ENV_ARGS[@]+${ENV_ARGS[@]} } \
   -v "${HOME}/.config/opencode:/home/opencode/.config/opencode" \
   -v "${HOME}/.cache/opencode:/home/opencode/.cache/opencode" \
+  -v "${HOME}/.local/state/opencode:/tmp/state-opencode:ro" \
+  -v "${CONTAINER_NAME}-state:/home/opencode/.local/state/opencode" \
   -v "${EDITOR_HOST_PATH}:/usr/bin/${EDITOR_BASENAME}:ro" \
   -v "$(pwd)":/work \
   local/opencode-sandbox \
-  sleep infinity
+  /bin/bash -c "
+    cp -r /tmp/state-opencode/* /home/opencode/.local/state/opencode/;
+    ${RUN_ARGS[@]+"${RUN_ARGS[@]}"}"
 
-docker cp "${HOME}/.local/state/opencode" "${CONTAINER_NAME}:/home/opencode/.local/state/opencode"
-
-docker start ${CONTAINER_NAME}
-docker exec -ti ${CONTAINER_NAME} \
-  ${RUN_ARGS[@]+"${RUN_ARGS[@]}"}
-
-docker rm -f ${CONTAINER_NAME}
+docker volume rm "${CONTAINER_NAME}-state"

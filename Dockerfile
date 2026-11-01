@@ -48,9 +48,9 @@ RUN cd /tmp \
 # Ensure default dirs exist
 
 RUN mkdir -p /work \
-  && chown opencode:opencode /work \
+  && chown 1000:1000 /work \
   && mkdir -p /home/opencode \
-  && chown -R opencode:opencode /home/opencode
+  && chown -Rf 1000:1000 /home/opencode
 
 # Cleanup
 
@@ -69,7 +69,13 @@ WORKDIR /home/opencode
 RUN npm install @opencode/cli-linux-x64@${OPENCODE_VERSION} \
   && npm cache clean --force
 
-RUN mkdir -p /home/opencode/.local/share \
+RUN true \
+  && mkdir -p /home/opencode/.cache \
+  && mkdir -p /home/opencode/.config \
+  && mkdir -p /home/opencode/.local \
+  && mkdir -p /home/opencode/.local/cache \
+  && mkdir -p /home/opencode/.local/share \
+  && mkdir -p /home/opencode/.local/state \
   && mkdir -p /home/opencode/.local/state/opencode
 
 ENV PATH="${PATH}:/home/opencode/node_modules/@opencode/cli-linux-x64/bin"
