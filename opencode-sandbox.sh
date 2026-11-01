@@ -121,6 +121,8 @@ docker run --rm -ti --name ${CONTAINER_NAME} \
   ${ENV_ARGS[@]+${ENV_ARGS[@]} } \
   -v "${HOME}/.config/opencode:/home/opencode/.config/opencode" \
   -v "${HOME}/.cache/opencode:/home/opencode/.cache/opencode" \
+  -v "${HOME}/.local/state/opencode/prompt-history.jsonl:/home/opencode/.local/state/opencode/prompt-history.jsonl" \
+  -v "${HOME}/.local/state/opencode/model.json:/home/opencode/.local/state/opencode/model.json" \
   -v "${CONTAINER_NAME}-state:/home/opencode/.local/state/opencode" \
   -v "${EDITOR_HOST_PATH}:/usr/bin/${EDITOR_BASENAME}:ro" \
   -v "$(pwd)":/work \
